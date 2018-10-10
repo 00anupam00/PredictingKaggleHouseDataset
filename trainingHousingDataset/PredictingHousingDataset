@@ -1,6 +1,7 @@
 import pandas as p
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import linear_model
 
 # Verify the pandas has been imported
 df = p.Dataframe({"A":[11,12,13], "B":[34,78.109]})
@@ -153,12 +154,16 @@ X_train, X_test, y_train, y_test= train_test_split(x,y, random_state=42, test_si
 
 # LinearRegression model building
 # Instantiate the model
-from sklearn import linear_model
-lr= linear_model.LinearRegression()
+from sklearn.ensemble import RandomForestRegressor
+model= RandomForestRegressor(n_jobs=-1)
 
+estimators= np.arange(10, 200, 10)
+scores=[]
+for n in estimators:
+    model.set_params(n_estimators=n)
+    model.fit(X_train, y_train)
+    scores.append(model.score(X_test, y_test)) # Fit the model. Estimate the relationship of the features and the target variable
 
-# Fit the model. Estimate the relationship of the features and the target variable
-model= lr.fit(X_train, y_train)
 
 ## Evaluation of the performance and visualizing results.
 # Evaluation with r-squared value[Its a measure of how closely the data are fitted to regression line. Higher value means better fit.]
@@ -179,24 +184,24 @@ plt.title('Linear Regression Model')
 plt.show()
 
 
-## Improving the model with Ridge Regularization
+## Trying to improve with Ridge Regularization
 # Ridge regualization decreases the influence of less important features.
 # It takes a parameter called alpha, which controls the strength of the regularization
-def regularize():
-    for i in range(-2,3):
-        alpha= 100 ** i
-        rm= linear_model.Ridge(alpha=alpha)
-        ridge_model= rm.fit(X_train, y_train)
-        ridge_preds= ridge_model.predict(X_test)
-
-        plt.scatter(ridge_preds, actual_values, alpha=.75, color='b')
-        plt.xlabel('Predicted Price')
-        plt.ylabel('Actual Price')
-        plt.title('Ridge Regularization with alpha= {}'.format(alpha))
-        overlay= 'R^2 is {} \\n RMSE is {}'.format(ridge_model.score(X_train, y_train), mean_squared_error(y_test, ridge_preds))
-        plt.annotate(s=overlay, xy= (12.1, 10.6), size='x-large')
-        plt.show()
-    return
+# def regularize():
+#     for i in range(-2,3):
+#         alpha= 100 ** i
+#         rm= linear_model.Ridge(alpha=alpha)
+#         ridge_model= rm.fit(X_train, y_train)
+#         ridge_preds= ridge_model.predict(X_test)
+#
+#         plt.scatter(ridge_preds, actual_values, alpha=.75, color='b')
+#         plt.xlabel('Predicted Price')
+#         plt.ylabel('Actual Price')
+#         plt.title('Ridge Regularization with alpha= {}'.format(alpha))
+#         overlay= 'R^2 is {} \\n RMSE is {}'.format(ridge_model.score(X_train, y_train), mean_squared_error(y_test, ridge_preds))
+#         plt.annotate(s=overlay, xy= (12.1, 10.6), size='x-large')
+#         plt.show()
+#     return
 
 
 ## Observation:
@@ -206,6 +211,20 @@ def regularize():
 # Nest Step: Increase the no of features and repeat the steps to check any improvement in accuracy.
 
 ## Kaggle Submission
+submission= p.DataFrame()
+submission['Id']= test.id
+
+features= test.select_dtypes(include=[np.number]).drop(['Id'], axis=1).interpolate()
+predictions= model.predict(features)
+final_predictions= np.exp(predictions)
+print('Original predictions are: \\n',predictions[:5],'\\n')
+print('Final predictions are : \n', final_predictions[:5])
+
+submission['SalePrice']= final_predictions
+submission.head()
+submission.to_csv('E:\\labs\\rakshitlabs\\PredictingKaggleHouseDataset\\trainingHousingDataset\\data\\all\\submissions.csv', index=False)
+
+
 
 
 
