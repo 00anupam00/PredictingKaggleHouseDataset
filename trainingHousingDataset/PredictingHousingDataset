@@ -206,6 +206,18 @@ def regularize():
 # Nest Step: Increase the no of features and repeat the steps to check any improvement in accuracy.
 
 ## Kaggle Submission
+submission= p.DataFrame()
+submission['Id']= test.id
+
+features= test.select_dtypes(include=[np.number]).drop(['Id'], axis=1).interpolate()
+predictions= model.predict(features)
+final_predictions= np.exp(predictions)
+print('Original predictions are: \\n',predictions[:5],'\\n')
+print('Final predictions are : \n', final_predictions[:5])
+
+submission['SalePrice']= final_predictions
+submission.head()
+submission.to_csv('E:\\labs\\rakshitlabs\\PredictingKaggleHouseDataset\\trainingHousingDataset\\data\\all\\submissions.csv', index=False)
 
 
 
