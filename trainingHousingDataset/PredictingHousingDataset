@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # Verify the pandas has been imported
 df = p.Dataframe({"A":[11,12,13], "B":[34,78.109]})
-df.ssum()
+df.sum()
 
 # Load the train and test datasets
 train= p.read_csv("E:\\labs\\rakshitlabs\\PredictingKaggleHouseDataset\\trainingHousingDataset\\data\\all\\train.csv")
