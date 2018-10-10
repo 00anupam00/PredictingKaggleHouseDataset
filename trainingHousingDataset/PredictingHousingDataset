@@ -158,7 +158,52 @@ lr= linear_model.LinearRegression()
 
 
 # Fit the model. Estimate the relationship of the features and the target variable
+model= lr.fit(X_train, y_train)
 
+## Evaluation of the performance and visualizing results.
+# Evaluation with r-squared value[Its a measure of how closely the data are fitted to regression line. Higher value means better fit.]
+print("R^2 is: \n", model.score(X_test, y_test))
+
+# Evalutaion using root mean squared error.
+# It is a measure of the distance between the predicted value and the actual value.
+predictions= model.predict(X_test)
+from sklearn.metrics import mean_squared_error
+print('RMSE is:\n',mean_squared_error(y_test, predictions))
+
+# Visualize graphically
+actual_values= y_test
+plt.scatter(predictions, actual_values, alpha=.75, color='blue')
+plt.xlabel('Predicted Price')
+plt.ylabel('Actual Price')
+plt.title('Linear Regression Model')
+plt.show()
+
+
+## Improving the model with Ridge Regularization
+# Ridge regualization decreases the influence of less important features.
+# It takes a parameter called alpha, which controls the strength of the regularization
+def regularize():
+    for i in range(-2,3):
+        alpha= 100 ** i
+        rm= linear_model.Ridge(alpha=alpha)
+        ridge_model= rm.fit(X_train, y_train)
+        ridge_preds= ridge_model.predict(X_test)
+
+        plt.scatter(ridge_preds, actual_values, alpha=.75, color='b')
+        plt.xlabel('Predicted Price')
+        plt.ylabel('Actual Price')
+        plt.title('Ridge Regularization with alpha= {}'.format(alpha))
+        overlay= 'R^2 is {} \\n RMSE is {}'.format(ridge_model.score(X_train, y_train), mean_squared_error(y_test, ridge_preds))
+        plt.annotate(s=overlay, xy= (12.1, 10.6), size='x-large')
+        plt.show()
+    return;
+
+
+## Observation:
+# with alpha 0.00001 the accuracy is the highest to 89%.
+# Increasing alpha value decreases the accuracy.
+# No major imporvements are noticed with regularization.
+# Nest Step: Increase the no of features and repeat the steps to check any improvement in accuracy.
 
 
 
